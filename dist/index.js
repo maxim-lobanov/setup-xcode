@@ -2284,9 +2284,9 @@ const run = () => {
                 ...selector.getAllVersions().map(ver => `- ${ver.version} (${ver.path})`)
             ].join(os_1.EOL));
         }
-        core.debug(`Xcode ${targetVersion} will be set`);
+        core.debug(`Xcode ${targetVersion.version} (${targetVersion.path}) will be set`);
         selector.setVersion(targetVersion);
-        core.info(`Xcode is set to '${targetVersion}'`);
+        core.info(`Xcode is set to '${targetVersion.version}'`);
     }
     catch (error) {
         core.setFailed(error.message);
