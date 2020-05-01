@@ -1,0 +1,36 @@
+name: Validate 'setup-xcode'
+on:
+  pull_request:
+  schedule:
+    - cron: 0 0 * * *
+
+jobs:
+  xcode-versions:
+    name: xcode versions
+    runs-on: macos-latest
+    strategy:
+    matrix:
+      xcode-version: [10.3, 11, 11.2, 11.4.0, 11.4.1, ^11.4.0]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: setup-xcode
+      uses: ./
+      with:
+        xcode-version: ${{ matrix.xcode-version }}
+
+    - name: Validate versions
+      run: pwsh ./__tests__/validate-xcode-version.ps1 "${{ matrix.xcode-version }}"
+
+  xcode-latest:
+    name: xcode latest
+    runs-on: macos-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: setup-xcode
+      uses: ./
+      with:
+        xcode-version: latest
