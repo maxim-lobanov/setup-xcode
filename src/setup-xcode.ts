@@ -17,7 +17,7 @@ const run = (): void => {
         if (!targetVersion) {
             throw new Error(
                 [
-                    `Could not find Xcode version that satisfied version spec: ${versionSpec}`,
+                    `Could not find Xcode version that satisfied version spec: '${versionSpec}'`,
                     "Available versions:",
                     ...selector.getAllVersions().map(ver => `- ${ver.version} (${ver.path})`)
                 ].join(EOL)
