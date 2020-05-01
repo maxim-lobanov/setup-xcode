@@ -1810,10 +1810,6 @@ class XcodeSelector {
         if (versionSpec === "latest") {
             return availableVersions[0];
         }
-        const cleanedVersionSpec = semver.coerce(versionSpec);
-        if (!semver.valid(cleanedVersionSpec)) {
-            throw new Error(`Value '${versionSpec}' (${cleanedVersionSpec}) is not valid version for Xcode`);
-        }
         return (_a = availableVersions.find(ver => semver.satisfies(ver.version, versionSpec))) !== null && _a !== void 0 ? _a : null;
     }
     setVersion(xcodeVersion) {

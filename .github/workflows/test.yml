@@ -21,9 +21,6 @@ jobs:
       with:
         xcode-version: ${{ matrix.xcode-version }}
 
-    - name: Validate versions
-      run: pwsh ./__tests__/validate-xcode-version.ps1 "${{ matrix.xcode-version }}"
-
   xcode-latest:
     name: xcode latest
     runs-on: macos-latest

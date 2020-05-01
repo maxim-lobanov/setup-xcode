@@ -86,20 +86,13 @@ describe("XcodeSelector", () => {
             ["~11.2.0", "11.2.1"],
             ["^11.2.0", "11.4.0"],
             ["< 11.0", "10.3.0"],
-            ["10.0.0 - 11.2.0", "11.2.0"]
+            ["10.0.0 - 11.2.0", "11.2.0"],
+            ["give me latest version", null]
         ] as [string, string | null][])("'%s' -> '%s'", (versionSpec: string, expected: string | null) => {
             const sel = new XcodeSelector();
             sel.getAllVersions = (): XcodeVersion[] => fakeGetVersionsResult;
             const matchedVersion = sel.findVersion(versionSpec)?.version ?? null;
             expect(matchedVersion).toBe(expected);
-        });
-
-        it.each([
-            "give me latest version"
-        ])("'%s' -> error", (versionSpec: string) => {
-            const sel = new XcodeSelector();
-            sel.getAllVersions = (): XcodeVersion[] => fakeGetVersionsResult;
-            expect(() => sel.findVersion(versionSpec)).toThrow();
         });
     });
 

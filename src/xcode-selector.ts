@@ -51,11 +51,6 @@ export class XcodeSelector {
             return availableVersions[0];
         }
 
-        const cleanedVersionSpec = semver.coerce(versionSpec);
-        if (!semver.valid(cleanedVersionSpec)) {
-            throw new Error(`Value '${versionSpec}' (${cleanedVersionSpec}) is not valid version for Xcode`);
-        }
-
         return availableVersions.find(ver => semver.satisfies(ver.version, versionSpec)) ?? null;
     }
 
