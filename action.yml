@@ -11,4 +11,4 @@ runs:
   main: 'dist/index.js'
 branding:
   icon: 'code'
-  color: 'yellow'
+  color: 'blue'

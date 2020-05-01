@@ -1,14 +1,10 @@
-param (
-    [string]$XcodeVersion
-)
+param ([string]$XcodeVersion)
 
-$expectedXcodePath = "/Applications/Xcode_$XcodeVersion.app"
+$XcodeVersion = $XcodeVersion.TrimStart("^", "~")
+$ExpectedOutput = "Xcode $XcodeVersion"
 
-Write-Host "Check Xcode version"
-$actualXcodePath = & xcode-select -p
-if (!$actualXcodePath.StartsWith($expectedXcodePath)) {
-    Write-Error "Incorrect Xcode: $actualXcodePath"
+[string]$ActualOutput = Invoke-Expression "xcodebuild -version"
+if (!$ActualOutput.StartsWith($ExpectedOutput)) {
+    Write-Error "Incorrect  selected: $actualXcodePath"
     exit 1
 }
-
-Write-Host "Correct Xcode: $XcodeVersion"
