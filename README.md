@@ -7,6 +7,7 @@ The list of all available versions can be found in [virtual-environments](https:
 | Argument                | Description              | Format    |
 |-------------------------|--------------------------|--------------------|
 | `xcode-version`           | Specify the Xcode version to use | `latest` keyword or any [semver](https://semver.org/) string  |
+
 **Examples:** `latest`, `10`, `11.4`, `11.4.0`, `^11.4.0`  
 
 # Usage
