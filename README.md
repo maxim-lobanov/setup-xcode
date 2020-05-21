@@ -20,12 +20,12 @@ jobs:
     runs-on: macos-latest
     steps:
     - name: setup-xcode
-      uses: maxim-lobanov/setup-xcode@v1.0
+      uses: maxim-lobanov/setup-xcode@1.0
       with:
         xcode-version: 11.4 # set the latest available Xcode 11.4.*
 
     - name: setup-latest-xcode
-      uses: maxim-lobanov/setup-xcode@v1.0
+      uses: maxim-lobanov/setup-xcode@1.0
       with:
         xcode-version: latest # set the latest available Xcode 11.4.*
 ```
