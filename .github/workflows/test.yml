@@ -10,7 +10,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        xcode-version: [10.3, 11, 11.2, 11.4.0, 11.4.1, ^11.4.0, latest]
+        xcode-version: [10.3, 11, 11.2, 11.4.0, 11.4.1, ^11.4.0, latest, latest-stable]
       fail-fast: false
     steps:
     - name: Checkout
