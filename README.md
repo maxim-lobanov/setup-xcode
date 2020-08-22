@@ -10,6 +10,8 @@ The list of all available versions can be found in [virtual-environments](https:
 
 **Examples:** `latest`, `10`, `11.4`, `11.4.0`, `^11.4.0`  
 
+**Note:** `latest` *includes* beta releases that GitHub actions has installed.
+
 # Usage
 ```
 name: CI
