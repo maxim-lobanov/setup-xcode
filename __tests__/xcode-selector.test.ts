@@ -24,7 +24,7 @@ const fakeReadDirResults = [
     buildFsDirentItem("Xcode_11.4.app", { isSymbolicLink: true, isDirectory: false }),
     buildFsDirentItem("Xcode_11.4_beta.app", { isSymbolicLink: false, isDirectory: true }),
     buildFsDirentItem("Xcode_11.app", { isSymbolicLink: false, isDirectory: true }),
-    buildFsDirentItem("Xcode_12_beta.app", { isSymbolicLink: false, isDirectory: true}),
+    buildFsDirentItem("Xcode_12_beta.app", { isSymbolicLink: false, isDirectory: true }),
     buildFsDirentItem("third_party_folder", { isSymbolicLink: false, isDirectory: true }),
 ];
 

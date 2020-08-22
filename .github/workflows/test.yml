@@ -16,7 +16,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: setup-xcode
-      uses: ./
+    - uses: ./
       with:
         xcode-version: ${{ matrix.xcode-version }}
