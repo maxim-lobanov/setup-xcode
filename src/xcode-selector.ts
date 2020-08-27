@@ -7,6 +7,7 @@ import * as semver from "semver";
 export interface XcodeVersion {
     version: string;
     path: string;
+    stable: boolean;
 }
 
 export class XcodeSelector {
@@ -26,7 +27,8 @@ export class XcodeSelector {
 
         return {
             version: version.version,
-            path: appPath
+            path: appPath,
+            stable: !match[2],
         };
     }
 
@@ -49,6 +51,10 @@ export class XcodeSelector {
 
         if (versionSpec === "latest") {
             return availableVersions[0];
+        }
+
+        if (versionSpec === "latest-stable") {
+            return availableVersions.filter(ver => ver.stable)[0];
         }
 
         return availableVersions.find(ver => semver.satisfies(ver.version, versionSpec)) ?? null;

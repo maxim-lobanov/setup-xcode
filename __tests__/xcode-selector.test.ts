@@ -24,24 +24,26 @@ const fakeReadDirResults = [
     buildFsDirentItem("Xcode_11.4.app", { isSymbolicLink: true, isDirectory: false }),
     buildFsDirentItem("Xcode_11.4_beta.app", { isSymbolicLink: false, isDirectory: true }),
     buildFsDirentItem("Xcode_11.app", { isSymbolicLink: false, isDirectory: true }),
+    buildFsDirentItem("Xcode_12_beta.app", { isSymbolicLink: false, isDirectory: true }),
     buildFsDirentItem("third_party_folder", { isSymbolicLink: false, isDirectory: true }),
 ];
 
 const fakeGetVersionsResult: XcodeVersion[] = [
-    { version: "11.4.0", path: "" },
-    { version: "11.2.1", path: "" },
-    { version: "11.2.0", path: "" },
-    { version: "11.0.0", path: "" },
-    { version: "10.3.0", path: "" }
+    { version: "12.0.0", path: "", stable: false },
+    { version: "11.4.0", path: "", stable: true },
+    { version: "11.2.1", path: "", stable: true },
+    { version: "11.2.0", path: "", stable: true },
+    { version: "11.0.0", path: "", stable: true },
+    { version: "10.3.0", path: "", stable: true }
 ];
 
 describe("XcodeSelector", () => {
     describe("getXcodeVersionFromAppPath", () => {
         it.each([
-            ["/temp/Xcode_11.app", { version: "11.0.0", path: "/temp/Xcode_11.app"}],
-            ["/temp/Xcode_11.2.app", { version: "11.2.0", path: "/temp/Xcode_11.2.app"}],
-            ["/temp/Xcode_11.2.1.app", { version: "11.2.1", path: "/temp/Xcode_11.2.1.app"}],
-            ["/temp/Xcode_11.2.1_beta.app", { version: "11.2.1", path: "/temp/Xcode_11.2.1_beta.app"}],
+            ["/temp/Xcode_11.app", { version: "11.0.0", path: "/temp/Xcode_11.app", stable: true }],
+            ["/temp/Xcode_11.2.app", { version: "11.2.0", path: "/temp/Xcode_11.2.app", stable: true }],
+            ["/temp/Xcode_11.2.1.app", { version: "11.2.1", path: "/temp/Xcode_11.2.1.app", stable: true }],
+            ["/temp/Xcode_11.2.1_beta.app", { version: "11.2.1", path: "/temp/Xcode_11.2.1_beta.app", stable: false }],
             ["/temp/Xcode.app", null],
             ["/temp/Xcode_11.2", null],
             ["/temp/Xcode.11.2.app", null]
@@ -66,10 +68,11 @@ describe("XcodeSelector", () => {
         it("versions are filtered correctly", () => {
             const sel = new XcodeSelector();
             const expectedVersions: XcodeVersion[] = [
-                { version: "11.4.0", path: "/Applications/Xcode_11.4_beta.app" },
-                { version: "11.2.1", path: "/Applications/Xcode_11.2.1.app" },
-                { version: "11.1.0", path: "/Applications/Xcode_11.1.app" },
-                { version: "11.0.0", path: "/Applications/Xcode_11.app" }
+                { version: "12.0.0", path: "/Applications/Xcode_12_beta.app", stable: false},
+                { version: "11.4.0", path: "/Applications/Xcode_11.4_beta.app", stable: false },
+                { version: "11.2.1", path: "/Applications/Xcode_11.2.1.app", stable: true },
+                { version: "11.1.0", path: "/Applications/Xcode_11.1.app", stable: true },
+                { version: "11.0.0", path: "/Applications/Xcode_11.app", stable: true },
             ];
             expect(sel.getAllVersions()).toEqual(expectedVersions);
         });
@@ -77,7 +80,8 @@ describe("XcodeSelector", () => {
 
     describe("findVersion", () => {
         it.each([
-            ["latest", "11.4.0"],
+            ["latest", "12.0.0"],
+            ["latest-stable", "11.4.0"],
             ["11", "11.4.0"],
             ["11.x", "11.4.0"],
             ["11.2.x", "11.2.1"],
@@ -102,7 +106,8 @@ describe("XcodeSelector", () => {
         let fsSpawnSpy: jest.SpyInstance;
         const xcodeVersion: XcodeVersion = {
             version: "11.4",
-            path: "/Applications/Xcode_11.4.app"
+            path: "/Applications/Xcode_11.4.app",
+            stable: true
         };
 
         beforeEach(() => {
