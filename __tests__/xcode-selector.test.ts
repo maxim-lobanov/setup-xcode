@@ -2,10 +2,12 @@ import * as fs from "fs";
 import * as child from "child_process";
 import * as core from "@actions/core";
 import { XcodeSelector, XcodeVersion } from "../src/xcode-selector";
+import * as xcodeUtils from "../src/xcode-utils";
 
 jest.mock("fs");
 jest.mock("child_process");
 jest.mock("@actions/core");
+jest.mock("../src/xcode-utils");
 
 const buildFsDirentItem = (name: string, opt: { isSymbolicLink: boolean; isDirectory: boolean }): fs.Dirent => {
     return {
@@ -39,11 +41,20 @@ const fakeGetVersionsResult: XcodeVersion[] = [
 
 describe("XcodeSelector", () => {
     describe("getXcodeVersionFromAppPath", () => {
+        beforeEach(() => {
+            jest.spyOn(xcodeUtils, "getXcodeReleaseType").mockImplementation(() => xcodeUtils.XcodeReleaseType.GM);
+        });
+
+        afterEach(() => {
+            jest.resetAllMocks();
+            jest.clearAllMocks();
+        });
+
         it.each([
             ["/temp/Xcode_11.app", { version: "11.0.0", path: "/temp/Xcode_11.app", stable: true }],
             ["/temp/Xcode_11.2.app", { version: "11.2.0", path: "/temp/Xcode_11.2.app", stable: true }],
             ["/temp/Xcode_11.2.1.app", { version: "11.2.1", path: "/temp/Xcode_11.2.1.app", stable: true }],
-            ["/temp/Xcode_11.2.1_beta.app", { version: "11.2.1", path: "/temp/Xcode_11.2.1_beta.app", stable: false }],
+            ["/temp/Xcode_11.2.1_beta.app", { version: "11.2.1", path: "/temp/Xcode_11.2.1_beta.app", stable: true }],
             ["/temp/Xcode.app", null],
             ["/temp/Xcode_11.2", null],
             ["/temp/Xcode.11.2.app", null]
@@ -58,6 +69,7 @@ describe("XcodeSelector", () => {
     describe("getAllVersions", () => {
         beforeEach(() => {
             jest.spyOn(fs, "readdirSync").mockImplementation(() => fakeReadDirResults);
+            jest.spyOn(xcodeUtils, "getXcodeReleaseType").mockImplementation(() => xcodeUtils.XcodeReleaseType.GM);
         });
 
         afterEach(() => {
@@ -68,8 +80,8 @@ describe("XcodeSelector", () => {
         it("versions are filtered correctly", () => {
             const sel = new XcodeSelector();
             const expectedVersions: XcodeVersion[] = [
-                { version: "12.0.0", path: "/Applications/Xcode_12_beta.app", stable: false},
-                { version: "11.4.0", path: "/Applications/Xcode_11.4_beta.app", stable: false },
+                { version: "12.0.0", path: "/Applications/Xcode_12_beta.app", stable: true},
+                { version: "11.4.0", path: "/Applications/Xcode_11.4_beta.app", stable: true },
                 { version: "11.2.1", path: "/Applications/Xcode_11.2.1.app", stable: true },
                 { version: "11.1.0", path: "/Applications/Xcode_11.1.app", stable: true },
                 { version: "11.0.0", path: "/Applications/Xcode_11.app", stable: true },
@@ -135,4 +147,5 @@ describe("XcodeSelector", () => {
             expect(() => sel.setVersion(xcodeVersion)).toThrow();
         });
     });
+    
 });
