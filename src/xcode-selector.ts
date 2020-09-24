@@ -3,6 +3,7 @@ import * as core from "@actions/core";
 import * as fs from "fs";
 import * as path from "path";
 import * as semver from "semver";
+import { getXcodeReleaseType, XcodeReleaseType } from "./xcode-utils";
 
 export interface XcodeVersion {
     version: string;
@@ -28,7 +29,7 @@ export class XcodeSelector {
         return {
             version: version.version,
             path: appPath,
-            stable: !match[2],
+            stable: getXcodeReleaseType(appPath) === XcodeReleaseType.GM,
         };
     }
 
