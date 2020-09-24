@@ -38,7 +38,6 @@ const run = () => {
         const versionSpec = core.getInput("xcode-version", { required: false });
         core.info(`Switching Xcode to version '${versionSpec}'...`);
         const selector = new xcode_selector_1.XcodeSelector();
-        console.log(JSON.stringify(selector.getAllVersions(), null, 2));
         const targetVersion = selector.findVersion(versionSpec);
         if (!targetVersion) {
             throw new Error([
@@ -187,15 +186,15 @@ exports.getXcodeReleaseType = (xcodeRootPath) => {
     const licenseInfoPlistPath = path.join(xcodeRootPath, "Contents", "Resources", "LicenseInfo.plist");
     if (!fs.existsSync(licenseInfoPlistPath)) {
         // Every Xcode should contain license plist but it can be changed in future
-        core.warning("Unable to determine Xcode version type based on license plist");
-        core.warning(`Xcode License plist doesn't on exist on path '${licenseInfoPlistPath}'`);
+        core.debug("Unable to determine Xcode version type based on license plist");
+        core.debug(`Xcode License plist doesn't on exist on path '${licenseInfoPlistPath}'`);
         return XcodeReleaseType.Unknown;
     }
     const licenseInfoRawContent = fs.readFileSync(licenseInfoPlistPath, "utf8");
     const licenseInfo = plist.parse(licenseInfoRawContent);
     if (!licenseInfo.licenseType) {
-        core.warning("Unable to determine Xcode version type based on license plist");
-        core.warning("Xcode License plist doesn't contain 'licenseType' property");
+        core.debug("Unable to determine Xcode version type based on license plist");
+        core.debug("Xcode License plist doesn't contain 'licenseType' property");
         return XcodeReleaseType.Unknown;
     }
     const licenseType = licenseInfo.licenseType.toString().toLowerCase();
