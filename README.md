@@ -6,12 +6,13 @@ The list of all available versions can be found in [virtual-environments](https:
 # Available parameters
 | Argument                | Description              | Format    |
 |-------------------------|--------------------------|--------------------|
-| `xcode-version`           | Specify the Xcode version to use | `latest`, `latest-stable` or any [semver](https://semver.org/) string  |
+| `xcode-version`           | Specify the Xcode version to use | - `latest` or<br> - `latest-stable` or<br> - [SemVer](https://semver.org/) string |
 
-**Examples:** `latest`, `latest-stable`, `10`, `11.4`, `11.4.0`, `^11.4.0`  
-**Note:**
+**Notes:**
 - `latest-stable` points to the latest stable version of Xcode
-- `latest` *includes* beta releases that GitHub actions has installed.
+- `latest` *includes* beta releases that GitHub actions has installed
+- SemVer examples: `10`, `11.4`, `12.0`, `11.7.0`, `^11.7.0` (find more examples in [SemVer cheatsheet](https://devhints.io/semver))
+- If sets a specific version, wraps it to single quotes in YAML like `'12.0'` to pass it as string because GitHub trimmes trailing `.0` from numbers
 
 # Usage
 Set the latest stable Xcode version:
@@ -44,7 +45,7 @@ jobs:
     steps:
     - uses: maxim-lobanov/setup-xcode@v1.1
       with:
-        xcode-version: 11.4
+        xcode-version: '12.0'
 ```
 # License
 The scripts and documentation in this project are released under the [MIT License](LICENSE)
