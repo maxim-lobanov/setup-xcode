@@ -2,7 +2,7 @@ name: Validate 'setup-xcode'
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
   schedule:
     - cron: 0 0 * * *
