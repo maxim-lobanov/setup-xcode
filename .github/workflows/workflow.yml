@@ -1,5 +1,11 @@
 name: Build task
-on: [pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: 0 0 * * *
 
 jobs:
   Build:
