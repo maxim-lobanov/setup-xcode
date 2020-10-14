@@ -38,7 +38,11 @@ const run = () => {
         const versionSpec = core.getInput("xcode-version", { required: false });
         core.info(`Switching Xcode to version '${versionSpec}'...`);
         const selector = new xcode_selector_1.XcodeSelector();
-        console.log(JSON.stringify(selector.getAllVersions(), null, 2));
+        if (core.isDebug()) {
+            core.startGroup("Available Xcode versions:");
+            core.debug(JSON.stringify(selector.getAllVersions(), null, 2));
+            core.endGroup();
+        }
         const targetVersion = selector.findVersion(versionSpec);
         if (!targetVersion) {
             throw new Error([
