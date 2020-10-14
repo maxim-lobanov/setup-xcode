@@ -9,6 +9,8 @@ export class XcodeSelector {
         const potentialXcodeApps = getInstalledXcodeApps().map(appPath => getXcodeVersionInfo(appPath));
         const xcodeVersions = potentialXcodeApps.filter((app): app is XcodeVersion => !!app);
 
+        console.log(JSON.stringify(xcodeVersions, null, 2));
+
         // sort versions array by descending to make sure that the newest version will be picked up
         return xcodeVersions.sort((first, second) => semver.compare(second.version, first.version));
     }
