@@ -38,6 +38,7 @@ const run = () => {
         const versionSpec = core.getInput("xcode-version", { required: false });
         core.info(`Switching Xcode to version '${versionSpec}'...`);
         const selector = new xcode_selector_1.XcodeSelector();
+        console.log(JSON.stringify(selector.getAllVersions(), null, 2));
         const targetVersion = selector.findVersion(versionSpec);
         if (!targetVersion) {
             throw new Error([
@@ -88,33 +89,12 @@ exports.XcodeSelector = void 0;
 const child = __importStar(__webpack_require__(3129));
 const core = __importStar(__webpack_require__(2186));
 const fs = __importStar(__webpack_require__(5747));
-const path = __importStar(__webpack_require__(5622));
 const semver = __importStar(__webpack_require__(1383));
 const xcode_utils_1 = __webpack_require__(1752);
 class XcodeSelector {
-    constructor() {
-        this.xcodeRootDirectory = "/Applications";
-        this.xcodeFilenameRegex = /Xcode_([\d.]+)(_beta)?\.app/;
-    }
-    getXcodeVersionFromAppPath(appPath) {
-        const match = appPath.match(this.xcodeFilenameRegex);
-        if (!match || match.length < 2) {
-            return null;
-        }
-        const version = semver.coerce(match[1]);
-        if (!semver.valid(version) || !version) {
-            return null;
-        }
-        return {
-            version: version.version,
-            path: appPath,
-            stable: xcode_utils_1.getXcodeReleaseType(appPath) === xcode_utils_1.XcodeReleaseType.GM,
-        };
-    }
     getAllVersions() {
-        const childrenAll = fs.readdirSync(this.xcodeRootDirectory, { encoding: "utf8", withFileTypes: true });
-        const childrenReal = childrenAll.filter(child => !child.isSymbolicLink() && child.isDirectory()).map(child => path.join(this.xcodeRootDirectory, child.name));
-        const xcodeVersions = childrenReal.map(appPath => this.getXcodeVersionFromAppPath(appPath)).filter((appItem) => !!appItem);
+        const potentialXcodeApps = xcode_utils_1.getInstalledXcodeApps().map(appPath => xcode_utils_1.getXcodeVersionInfo(appPath));
+        const xcodeVersions = potentialXcodeApps.filter((app) => !!app);
         // sort versions array by descending to make sure that the newest version will be picked up
         return xcodeVersions.sort((first, second) => semver.compare(second.version, first.version));
     }
@@ -171,37 +151,52 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getXcodeReleaseType = exports.XcodeReleaseType = void 0;
+exports.getXcodeVersionInfo = exports.getXcodeReleaseType = exports.getInstalledXcodeApps = void 0;
 const path = __importStar(__webpack_require__(5622));
 const fs = __importStar(__webpack_require__(5747));
 const core = __importStar(__webpack_require__(2186));
 const plist = __importStar(__webpack_require__(1933));
-var XcodeReleaseType;
-(function (XcodeReleaseType) {
-    XcodeReleaseType["GM"] = "GM";
-    XcodeReleaseType["Beta"] = "Beta";
-    XcodeReleaseType["Unknown"] = "Unknown";
-})(XcodeReleaseType = exports.XcodeReleaseType || (exports.XcodeReleaseType = {}));
-exports.getXcodeReleaseType = (xcodeRootPath) => {
-    const licenseInfoPlistPath = path.join(xcodeRootPath, "Contents", "Resources", "LicenseInfo.plist");
-    if (!fs.existsSync(licenseInfoPlistPath)) {
-        // Every Xcode should contain license plist but it can be changed in future
-        core.debug("Unable to determine Xcode version type based on license plist");
-        core.debug(`Xcode License plist doesn't on exist on path '${licenseInfoPlistPath}'`);
-        return XcodeReleaseType.Unknown;
+const parsePlistFile = (plistPath) => {
+    if (!fs.existsSync(plistPath)) {
+        core.debug(`Unable to open plist file. File doesn't exist on path '${plistPath}'`);
+        return null;
     }
-    const licenseInfoRawContent = fs.readFileSync(licenseInfoPlistPath, "utf8");
-    const licenseInfo = plist.parse(licenseInfoRawContent);
-    if (!licenseInfo.licenseType) {
+    const plistRawContent = fs.readFileSync(plistPath, "utf8");
+    return plist.parse(plistRawContent);
+};
+exports.getInstalledXcodeApps = () => {
+    const applicationsDirectory = "/Applications";
+    const xcodeAppFilenameRegex = /Xcode_([\d.]+)(_beta)?\.app/;
+    const allApplicationsChildItems = fs.readdirSync(applicationsDirectory, { encoding: "utf8", withFileTypes: true });
+    const allApplicationsRealItems = allApplicationsChildItems.filter(child => !child.isSymbolicLink() && child.isDirectory());
+    const allApplicationsFullPaths = allApplicationsRealItems.map(child => path.join(applicationsDirectory, child.name));
+    return allApplicationsFullPaths.filter(appPath => xcodeAppFilenameRegex.test(appPath));
+};
+exports.getXcodeReleaseType = (xcodeRootPath) => {
+    var _a, _b;
+    const licenseInfo = parsePlistFile(path.join(xcodeRootPath, "Contents", "Resources", "LicenseInfo.plist"));
+    const licenseType = (_b = (_a = licenseInfo === null || licenseInfo === void 0 ? void 0 : licenseInfo.licenseType) === null || _a === void 0 ? void 0 : _a.toString()) === null || _b === void 0 ? void 0 : _b.toLowerCase();
+    if (!licenseType) {
         core.debug("Unable to determine Xcode version type based on license plist");
         core.debug("Xcode License plist doesn't contain 'licenseType' property");
-        return XcodeReleaseType.Unknown;
+        return "Unknown";
     }
-    const licenseType = licenseInfo.licenseType.toString().toLowerCase();
-    if (licenseType.includes("beta")) {
-        return XcodeReleaseType.Beta;
+    return licenseType.includes("beta") ? "Beta" : "GM";
+};
+exports.getXcodeVersionInfo = (xcodeRootPath) => {
+    var _a, _b;
+    const versionInfo = parsePlistFile(path.join(xcodeRootPath, "Contents", "version.plist"));
+    if (!versionInfo) {
+        return null;
     }
-    return XcodeReleaseType.GM;
+    const releaseType = exports.getXcodeReleaseType(xcodeRootPath);
+    return {
+        version: (_a = versionInfo.CFBundleShortVersionString) === null || _a === void 0 ? void 0 : _a.toString(),
+        buildNumber: (_b = versionInfo.ProductBuildVersion) === null || _b === void 0 ? void 0 : _b.toString(),
+        releaseType: releaseType,
+        stable: releaseType === "GM",
+        path: xcodeRootPath,
+    };
 };
 
 

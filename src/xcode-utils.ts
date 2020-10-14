@@ -3,34 +3,62 @@ import * as fs from "fs";
 import * as core from "@actions/core";
 import * as plist from "plist";
 
-export enum XcodeReleaseType {
-    GM = "GM",
-    Beta = "Beta",
-    Unknown = "Unknown"
+export type XcodeVersionReleaseType = "GM" | "Beta" | "Unknown";
+
+export interface XcodeVersion {
+    version: string;
+    buildNumber: string;
+    path: string;
+    releaseType: XcodeVersionReleaseType;
+    stable: boolean;
 }
 
-export const getXcodeReleaseType = (xcodeRootPath: string): XcodeReleaseType => {
-    const licenseInfoPlistPath = path.join(xcodeRootPath, "Contents", "Resources", "LicenseInfo.plist");
-    if (!fs.existsSync(licenseInfoPlistPath)) {
-        // Every Xcode should contain license plist but it can be changed in future
-        core.debug("Unable to determine Xcode version type based on license plist");
-        core.debug(`Xcode License plist doesn't on exist on path '${licenseInfoPlistPath}'`);
-        return XcodeReleaseType.Unknown;
+const parsePlistFile = (plistPath: string): plist.PlistObject | null => {
+    if (!fs.existsSync(plistPath)) {
+        core.debug(`Unable to open plist file. File doesn't exist on path '${plistPath}'`);
+        return null;
     }
 
-    const licenseInfoRawContent = fs.readFileSync(licenseInfoPlistPath, "utf8");
-    const licenseInfo = plist.parse(licenseInfoRawContent) as plist.PlistObject;
-    if (!licenseInfo.licenseType) {
+    const plistRawContent = fs.readFileSync(plistPath, "utf8");
+    return plist.parse(plistRawContent) as plist.PlistObject;
+};
+
+export const getInstalledXcodeApps = (): string[] => {
+    const applicationsDirectory = "/Applications";
+    const xcodeAppFilenameRegex = /Xcode_([\d.]+)(_beta)?\.app/;
+
+    const allApplicationsChildItems = fs.readdirSync(applicationsDirectory, { encoding: "utf8", withFileTypes: true });
+    const allApplicationsRealItems = allApplicationsChildItems.filter(child => !child.isSymbolicLink() && child.isDirectory());
+    const allApplicationsFullPaths = allApplicationsRealItems.map(child => path.join(applicationsDirectory, child.name));
+    return allApplicationsFullPaths.filter(appPath => xcodeAppFilenameRegex.test(appPath));
+};
+
+export const getXcodeReleaseType = (xcodeRootPath: string): XcodeVersionReleaseType => {
+    const licenseInfo = parsePlistFile(path.join(xcodeRootPath, "Contents", "Resources", "LicenseInfo.plist"));
+    const licenseType = licenseInfo?.licenseType?.toString()?.toLowerCase();
+    if (!licenseType) {
         core.debug("Unable to determine Xcode version type based on license plist");
         core.debug("Xcode License plist doesn't contain 'licenseType' property");
-        return XcodeReleaseType.Unknown;
+        return "Unknown";
     }
 
-    const licenseType = licenseInfo.licenseType.toString().toLowerCase();
-
-    if (licenseType.includes("beta")) {
-        return XcodeReleaseType.Beta;
-    }
-    
-    return XcodeReleaseType.GM;
+    return licenseType.includes("beta") ? "Beta" : "GM";
 };
+
+export const getXcodeVersionInfo = (xcodeRootPath: string): XcodeVersion | null => {
+    const versionInfo = parsePlistFile(path.join(xcodeRootPath, "Contents", "version.plist"));
+    if (!versionInfo) {
+        return null;
+    }
+
+    const releaseType = getXcodeReleaseType(xcodeRootPath);
+
+    return {
+        version: versionInfo.CFBundleShortVersionString?.toString(),
+        buildNumber: versionInfo.ProductBuildVersion?.toString(),
+        releaseType: releaseType,
+        stable: releaseType === "GM",
+        path: xcodeRootPath,
+    } as XcodeVersion;
+};
+
