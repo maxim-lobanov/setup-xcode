@@ -151,12 +151,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getXcodeVersionInfo = exports.getXcodeReleaseType = exports.getInstalledXcodeApps = void 0;
+exports.getXcodeVersionInfo = exports.getXcodeReleaseType = exports.getInstalledXcodeApps = exports.parsePlistFile = void 0;
 const path = __importStar(__webpack_require__(5622));
 const fs = __importStar(__webpack_require__(5747));
 const core = __importStar(__webpack_require__(2186));
 const plist = __importStar(__webpack_require__(1933));
-const parsePlistFile = (plistPath) => {
+const semver = __importStar(__webpack_require__(1383));
+exports.parsePlistFile = (plistPath) => {
     if (!fs.existsSync(plistPath)) {
         core.debug(`Unable to open plist file. File doesn't exist on path '${plistPath}'`);
         return null;
@@ -174,7 +175,7 @@ exports.getInstalledXcodeApps = () => {
 };
 exports.getXcodeReleaseType = (xcodeRootPath) => {
     var _a, _b;
-    const licenseInfo = parsePlistFile(path.join(xcodeRootPath, "Contents", "Resources", "LicenseInfo.plist"));
+    const licenseInfo = exports.parsePlistFile(path.join(xcodeRootPath, "Contents", "Resources", "LicenseInfo.plist"));
     const licenseType = (_b = (_a = licenseInfo === null || licenseInfo === void 0 ? void 0 : licenseInfo.licenseType) === null || _a === void 0 ? void 0 : _a.toString()) === null || _b === void 0 ? void 0 : _b.toLowerCase();
     if (!licenseType) {
         core.debug("Unable to determine Xcode version type based on license plist");
@@ -185,14 +186,16 @@ exports.getXcodeReleaseType = (xcodeRootPath) => {
 };
 exports.getXcodeVersionInfo = (xcodeRootPath) => {
     var _a, _b;
-    const versionInfo = parsePlistFile(path.join(xcodeRootPath, "Contents", "version.plist"));
-    if (!versionInfo) {
+    const versionInfo = exports.parsePlistFile(path.join(xcodeRootPath, "Contents", "version.plist"));
+    const xcodeVersion = semver.coerce((_a = versionInfo === null || versionInfo === void 0 ? void 0 : versionInfo.CFBundleShortVersionString) === null || _a === void 0 ? void 0 : _a.toString());
+    const xcodeBuildNumber = (_b = versionInfo === null || versionInfo === void 0 ? void 0 : versionInfo.ProductBuildVersion) === null || _b === void 0 ? void 0 : _b.toString();
+    if (!xcodeVersion || !semver.valid(xcodeVersion)) {
         return null;
     }
     const releaseType = exports.getXcodeReleaseType(xcodeRootPath);
     return {
-        version: (_a = versionInfo.CFBundleShortVersionString) === null || _a === void 0 ? void 0 : _a.toString(),
-        buildNumber: (_b = versionInfo.ProductBuildVersion) === null || _b === void 0 ? void 0 : _b.toString(),
+        version: xcodeVersion.version,
+        buildNumber: xcodeBuildNumber,
         releaseType: releaseType,
         stable: releaseType === "GM",
         path: xcodeRootPath,
