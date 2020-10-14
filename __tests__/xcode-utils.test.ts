@@ -5,6 +5,7 @@ import * as xcodeUtils from "../src/xcode-utils";
 let pathJoinSpy: jest.SpyInstance;
 let readdirSyncSpy: jest.SpyInstance;
 let getXcodeReleaseTypeSpy: jest.SpyInstance;
+let parsePlistFileSpy: jest.SpyInstance;
 
 const buildPlistPath = (plistName: string) => {
     return `${__dirname}/data/${plistName}`;
@@ -85,6 +86,11 @@ describe("getXcodeVersionInfo", () => {
         getXcodeReleaseTypeSpy = jest.spyOn(xcodeUtils, "getXcodeReleaseType");
     });
 
+    afterEach(() => {
+        jest.resetAllMocks();
+        jest.clearAllMocks();
+    });
+
     it("read version from plist", () => {
         const plistPath = buildPlistPath("xcode-version.plist");
         pathJoinSpy.mockImplementation(() => plistPath);
@@ -118,8 +124,50 @@ describe("getXcodeVersionInfo", () => {
         });
     });
 
-    afterEach(() => {
-        jest.resetAllMocks();
-        jest.clearAllMocks();
+    describe("coerce validation", () => {
+        beforeEach(() => {
+            parsePlistFileSpy = jest.spyOn(xcodeUtils, "parsePlistFile");
+        });
+    
+        afterEach(() => {
+            jest.resetAllMocks();
+            jest.clearAllMocks();
+        });
+
+        it("full version", () => {
+            parsePlistFileSpy.mockImplementation(() => {
+                return {
+                    CFBundleShortVersionString: "12.0.1", ProductBuildVersion: "2FF"
+                };
+            });
+            getXcodeReleaseTypeSpy.mockImplementation(() => "GM");
+
+            const xcodeInfo = xcodeUtils.getXcodeVersionInfo("fake_path");
+            expect(xcodeInfo?.version).toBe("12.0.1");
+        });
+
+        it("partial version", () => {
+            parsePlistFileSpy.mockImplementation(() => {
+                return {
+                    CFBundleShortVersionString: "10.3", ProductBuildVersion: "2FF"
+                };
+            });
+            getXcodeReleaseTypeSpy.mockImplementation(() => "GM");
+
+            const xcodeInfo = xcodeUtils.getXcodeVersionInfo("fake_path");
+            expect(xcodeInfo?.version).toBe("10.3.0");
+        });
+
+        it("invalid version", () => {
+            parsePlistFileSpy.mockImplementation(() => {
+                return {
+                    CFBundleShortVersionString: "fake_version", ProductBuildVersion: "2FF"
+                };
+            });
+            getXcodeReleaseTypeSpy.mockImplementation(() => "GM");
+
+            const xcodeInfo = xcodeUtils.getXcodeVersionInfo("fake_path");
+            expect(xcodeInfo).toBeNull();
+        });
     });
 });

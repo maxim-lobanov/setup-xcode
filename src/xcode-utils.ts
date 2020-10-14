@@ -2,6 +2,7 @@ import * as path from "path";
 import * as fs from "fs";
 import * as core from "@actions/core";
 import * as plist from "plist";
+import * as semver from "semver";
 
 export type XcodeVersionReleaseType = "GM" | "Beta" | "Unknown";
 
@@ -13,7 +14,7 @@ export interface XcodeVersion {
     stable: boolean;
 }
 
-const parsePlistFile = (plistPath: string): plist.PlistObject | null => {
+export const parsePlistFile = (plistPath: string): plist.PlistObject | null => {
     if (!fs.existsSync(plistPath)) {
         core.debug(`Unable to open plist file. File doesn't exist on path '${plistPath}'`);
         return null;
@@ -47,15 +48,17 @@ export const getXcodeReleaseType = (xcodeRootPath: string): XcodeVersionReleaseT
 
 export const getXcodeVersionInfo = (xcodeRootPath: string): XcodeVersion | null => {
     const versionInfo = parsePlistFile(path.join(xcodeRootPath, "Contents", "version.plist"));
-    if (!versionInfo) {
+    const xcodeVersion = semver.coerce(versionInfo?.CFBundleShortVersionString?.toString());
+    const xcodeBuildNumber = versionInfo?.ProductBuildVersion?.toString();
+    if (!xcodeVersion || !semver.valid(xcodeVersion)) {
         return null;
     }
 
     const releaseType = getXcodeReleaseType(xcodeRootPath);
 
     return {
-        version: versionInfo.CFBundleShortVersionString?.toString(),
-        buildNumber: versionInfo.ProductBuildVersion?.toString(),
+        version: xcodeVersion.version,
+        buildNumber: xcodeBuildNumber,
         releaseType: releaseType,
         stable: releaseType === "GM",
         path: xcodeRootPath,
