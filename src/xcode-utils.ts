@@ -30,8 +30,8 @@ export const getInstalledXcodeApps = (): string[] => {
 
     const allApplicationsChildItems = fs.readdirSync(applicationsDirectory, { encoding: "utf8", withFileTypes: true });
     const allApplicationsRealItems = allApplicationsChildItems.filter(child => !child.isSymbolicLink() && child.isDirectory());
-    const allApplicationsFullPaths = allApplicationsRealItems.map(child => path.join(applicationsDirectory, child.name));
-    return allApplicationsFullPaths.filter(appPath => xcodeAppFilenameRegex.test(appPath));
+    const xcodeAppsItems = allApplicationsRealItems.filter(app => xcodeAppFilenameRegex.test(app.name));
+    return xcodeAppsItems.map(child => path.join(applicationsDirectory, child.name));
 };
 
 export const getXcodeReleaseType = (xcodeRootPath: string): XcodeVersionReleaseType => {
@@ -51,6 +51,7 @@ export const getXcodeVersionInfo = (xcodeRootPath: string): XcodeVersion | null 
     const xcodeVersion = semver.coerce(versionInfo?.CFBundleShortVersionString?.toString());
     const xcodeBuildNumber = versionInfo?.ProductBuildVersion?.toString();
     if (!xcodeVersion || !semver.valid(xcodeVersion)) {
+        core.debug(`Unable to retrieve Xcode version info on path '${xcodeRootPath}'`);
         return null;
     }
 

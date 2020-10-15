@@ -174,8 +174,8 @@ exports.getInstalledXcodeApps = () => {
     const xcodeAppFilenameRegex = /Xcode_([\d.]+)(_beta)?\.app/;
     const allApplicationsChildItems = fs.readdirSync(applicationsDirectory, { encoding: "utf8", withFileTypes: true });
     const allApplicationsRealItems = allApplicationsChildItems.filter(child => !child.isSymbolicLink() && child.isDirectory());
-    const allApplicationsFullPaths = allApplicationsRealItems.map(child => path.join(applicationsDirectory, child.name));
-    return allApplicationsFullPaths.filter(appPath => xcodeAppFilenameRegex.test(appPath));
+    const xcodeAppsItems = allApplicationsRealItems.filter(app => xcodeAppFilenameRegex.test(app.name));
+    return xcodeAppsItems.map(child => path.join(applicationsDirectory, child.name));
 };
 exports.getXcodeReleaseType = (xcodeRootPath) => {
     var _a, _b;
@@ -194,6 +194,7 @@ exports.getXcodeVersionInfo = (xcodeRootPath) => {
     const xcodeVersion = semver.coerce((_a = versionInfo === null || versionInfo === void 0 ? void 0 : versionInfo.CFBundleShortVersionString) === null || _a === void 0 ? void 0 : _a.toString());
     const xcodeBuildNumber = (_b = versionInfo === null || versionInfo === void 0 ? void 0 : versionInfo.ProductBuildVersion) === null || _b === void 0 ? void 0 : _b.toString();
     if (!xcodeVersion || !semver.valid(xcodeVersion)) {
+        core.debug(`Unable to retrieve Xcode version info on path '${xcodeRootPath}'`);
         return null;
     }
     const releaseType = exports.getXcodeReleaseType(xcodeRootPath);

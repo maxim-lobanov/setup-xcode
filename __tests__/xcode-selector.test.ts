@@ -1,13 +1,10 @@
-import * as fs from "fs";
-import * as child from "child_process";
+import fs from "fs";
+import child from "child_process";
 import * as core from "@actions/core";
 import { XcodeSelector } from "../src/xcode-selector";
 import * as xcodeUtils from "../src/xcode-utils";
 
-jest.mock("fs");
 jest.mock("child_process");
-jest.mock("@actions/core");
-jest.mock("../src/xcode-utils");
 
 const fakeGetXcodeVersionInfoResult: xcodeUtils.XcodeVersion[] = [
     { version: "10.3.0", buildNumber: "", path: "/Applications/Xcode_10.3.app", releaseType: "GM", stable: true },
