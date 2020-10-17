@@ -53,7 +53,7 @@ const run = () => {
         }
         core.debug(`Xcode ${targetVersion.version} (${targetVersion.buildNumber}) (${targetVersion.path}) will be set`);
         selector.setVersion(targetVersion);
-        core.info(`Xcode is set to '${targetVersion.version}' (${targetVersion.buildNumber})`);
+        core.info(`Xcode is set to ${targetVersion.version} (${targetVersion.buildNumber})`);
     }
     catch (error) {
         core.setFailed(error.message);
