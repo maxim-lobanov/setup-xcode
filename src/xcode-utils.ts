@@ -26,7 +26,7 @@ export const parsePlistFile = (plistPath: string): plist.PlistObject | null => {
 
 export const getInstalledXcodeApps = (): string[] => {
     const applicationsDirectory = "/Applications";
-    const xcodeAppFilenameRegex = /Xcode_([\d.]+)(_beta)?\.app/;
+    const xcodeAppFilenameRegex = /^Xcode.*\.app$/;
 
     const allApplicationsChildItems = fs.readdirSync(applicationsDirectory, { encoding: "utf8", withFileTypes: true });
     const allApplicationsRealItems = allApplicationsChildItems.filter(child => !child.isSymbolicLink() && child.isDirectory());

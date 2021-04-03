@@ -22,6 +22,7 @@ const buildFsDirentItem = (name: string, opt: { isSymbolicLink: boolean; isDirec
 const fakeReadDirResults = [
     buildFsDirentItem("Xcode_2.app", { isSymbolicLink: true, isDirectory: false }),
     buildFsDirentItem("Xcode.app", { isSymbolicLink: false, isDirectory: true }),
+    buildFsDirentItem("Xcode12.4.app", { isSymbolicLink: false, isDirectory: true }),
     buildFsDirentItem("Xcode_11.1.app", { isSymbolicLink: false, isDirectory: true }),
     buildFsDirentItem("Xcode_11.1_beta.app", { isSymbolicLink: true, isDirectory: false }),
     buildFsDirentItem("Xcode_11.2.1.app", { isSymbolicLink: false, isDirectory: true }),
@@ -40,6 +41,8 @@ describe("getInstalledXcodeApps", () => {
     it("versions are filtered correctly", () => {
         readdirSyncSpy.mockImplementation(() => fakeReadDirResults);
         const expectedVersions: string[] = [
+            "/Applications/Xcode.app",
+            "/Applications/Xcode12.4.app",
             "/Applications/Xcode_11.1.app",
             "/Applications/Xcode_11.2.1.app",
             "/Applications/Xcode_11.4_beta.app",
