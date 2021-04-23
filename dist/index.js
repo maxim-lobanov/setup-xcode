@@ -171,7 +171,7 @@ exports.parsePlistFile = (plistPath) => {
 };
 exports.getInstalledXcodeApps = () => {
     const applicationsDirectory = "/Applications";
-    const xcodeAppFilenameRegex = /Xcode_([\d.]+)(_beta)?\.app/;
+    const xcodeAppFilenameRegex = /^Xcode.*\.app$/;
     const allApplicationsChildItems = fs.readdirSync(applicationsDirectory, { encoding: "utf8", withFileTypes: true });
     const allApplicationsRealItems = allApplicationsChildItems.filter(child => !child.isSymbolicLink() && child.isDirectory());
     const xcodeAppsItems = allApplicationsRealItems.filter(app => xcodeAppFilenameRegex.test(app.name));
