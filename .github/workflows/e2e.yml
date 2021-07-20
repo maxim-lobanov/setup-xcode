@@ -8,12 +8,27 @@ on:
     - cron: 0 0 * * *
 
 jobs:
-  xcode-versions:
-    name: xcode versions
-    runs-on: macos-latest
+  versions-macOS-10.15:
+    name: versions - macOS 10.15
+    runs-on: macos-10.15
     strategy:
       matrix:
-        xcode-version: ['10.3', '11', '11.2', '11.4.1', '11.7', '12', '12.0', '12.2', '^11.4.0', '~11.4.0', latest, latest-stable]
+        xcode-version: ['10.3', '11', '12', '12.0', '12.0.1', '12.4', '^12.1.0', '~12.1.0', latest, latest-stable]
+      fail-fast: false
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - uses: ./
+      with:
+        xcode-version: ${{ matrix.xcode-version }}
+
+  versions-macOS-11.0:
+    name: versions - macOS 11
+    runs-on: macos-11
+    strategy:
+      matrix:
+        xcode-version: ['11.7', '12', '12.5.0', '13', latest, latest-stable]
       fail-fast: false
     steps:
     - name: Checkout
