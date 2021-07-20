@@ -20,8 +20,14 @@ jobs:
       uses: actions/checkout@v2
 
     - uses: ./
+      name: Setup Xcode
+      id: setup-xcode
       with:
         xcode-version: ${{ matrix.xcode-version }}
+    - name: Print output variables
+      run: |
+        echo "Version: ${{ steps.setup-xcode.outputs.version }}"
+        echo "Path: ${{ steps.setup-xcode.outputs.path }}"
 
   versions-macOS-110:
     name: macOS 11
@@ -35,5 +41,11 @@ jobs:
       uses: actions/checkout@v2
 
     - uses: ./
+      name: Setup Xcode
+      id: setup-xcode
       with:
         xcode-version: ${{ matrix.xcode-version }}
+    - name: Print output variables
+      run: |
+        echo "Version: ${{ steps.setup-xcode.outputs.version }}"
+        echo "Path: ${{ steps.setup-xcode.outputs.path }}"

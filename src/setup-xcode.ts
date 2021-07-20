@@ -36,6 +36,9 @@ const run = (): void => {
         );
         selector.setVersion(targetVersion);
         core.info(`Xcode is set to ${targetVersion.version} (${targetVersion.buildNumber})`);
+
+        core.setOutput("version", targetVersion.version);
+        core.setOutput("path", targetVersion.path);
     } catch (error) {
         core.setFailed(error.message);
     }
