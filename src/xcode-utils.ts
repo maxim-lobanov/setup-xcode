@@ -28,14 +28,23 @@ export const getInstalledXcodeApps = (): string[] => {
     const applicationsDirectory = "/Applications";
     const xcodeAppFilenameRegex = /^Xcode.*\.app$/;
 
-    const allApplicationsChildItems = fs.readdirSync(applicationsDirectory, { encoding: "utf8", withFileTypes: true });
-    const allApplicationsRealItems = allApplicationsChildItems.filter(child => !child.isSymbolicLink() && child.isDirectory());
-    const xcodeAppsItems = allApplicationsRealItems.filter(app => xcodeAppFilenameRegex.test(app.name));
+    const allApplicationsChildItems = fs.readdirSync(applicationsDirectory, {
+        encoding: "utf8",
+        withFileTypes: true,
+    });
+    const allApplicationsRealItems = allApplicationsChildItems.filter(
+        child => !child.isSymbolicLink() && child.isDirectory()
+    );
+    const xcodeAppsItems = allApplicationsRealItems.filter(app =>
+        xcodeAppFilenameRegex.test(app.name)
+    );
     return xcodeAppsItems.map(child => path.join(applicationsDirectory, child.name));
 };
 
 export const getXcodeReleaseType = (xcodeRootPath: string): XcodeVersionReleaseType => {
-    const licenseInfo = parsePlistFile(path.join(xcodeRootPath, "Contents", "Resources", "LicenseInfo.plist"));
+    const licenseInfo = parsePlistFile(
+        path.join(xcodeRootPath, "Contents", "Resources", "LicenseInfo.plist")
+    );
     const licenseType = licenseInfo?.licenseType?.toString()?.toLowerCase();
     if (!licenseType) {
         core.debug("Unable to determine Xcode version type based on license plist");
@@ -65,4 +74,3 @@ export const getXcodeVersionInfo = (xcodeRootPath: string): XcodeVersion | null 
         path: xcodeRootPath,
     } as XcodeVersion;
 };
-

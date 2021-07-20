@@ -6,7 +6,9 @@ import { getInstalledXcodeApps, getXcodeVersionInfo, XcodeVersion } from "./xcod
 
 export class XcodeSelector {
     public getAllVersions(): XcodeVersion[] {
-        const potentialXcodeApps = getInstalledXcodeApps().map(appPath => getXcodeVersionInfo(appPath));
+        const potentialXcodeApps = getInstalledXcodeApps().map(appPath =>
+            getXcodeVersionInfo(appPath)
+        );
         const xcodeVersions = potentialXcodeApps.filter((app): app is XcodeVersion => !!app);
 
         // sort versions array by descending to make sure that the newest version will be picked up
@@ -40,5 +42,4 @@ export class XcodeSelector {
         // set "MD_APPLE_SDK_ROOT" environment variable to specify Xcode for Mono and Xamarin
         core.exportVariable("MD_APPLE_SDK_ROOT", xcodeVersion.path);
     }
-    
 }
