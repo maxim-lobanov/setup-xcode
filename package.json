@@ -7,6 +7,8 @@
   "scripts": {
     "build": "tsc && ncc build",
     "test": "jest",
+    "format": "npx prettier --write src/**/*",
+    "format-check": "npx prettier --check src/**/*",
     "lint": "npx eslint **/*.ts"
   },
   "repository": {
@@ -34,9 +36,11 @@
     "@typescript-eslint/parser": "^4.28.4",
     "@vercel/ncc": "^0.24.1",
     "eslint": "^7.31.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-jest": "^24.3.6",
     "jest": "^27.0.6",
     "jest-circus": "^27.0.6",
+    "prettier": "2.3.2",
     "ts-jest": "^27.0.3",
     "typescript": "^4.3.5"
   }
