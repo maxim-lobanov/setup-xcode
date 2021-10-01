@@ -9,6 +9,7 @@ jest.mock("child_process");
 const fakeGetXcodeVersionInfoResult: xcodeUtils.XcodeVersion[] = [
     { version: "10.3.0", buildNumber: "", path: "/Applications/Xcode_10.3.app", releaseType: "GM", stable: true },
     { version: "12.0.0", buildNumber: "", path: "/Applications/Xcode_12_beta.app", releaseType: "Beta", stable: false },
+    { version: "12.0.0", buildNumber: "", path: "/Applications/Xcode_12.app", releaseType: "GM", stable: true },
     { version: "11.2.1", buildNumber: "", path: "/Applications/Xcode_11.2.1.app", releaseType: "GM", stable: true },
     { version: "11.4.0", buildNumber: "", path: "/Applications/Xcode_11.4.app", releaseType: "GM", stable: true },
     { version: "11.0.0", buildNumber: "", path: "/Applications/Xcode_11.app", releaseType: "GM", stable: true },
@@ -17,6 +18,7 @@ const fakeGetXcodeVersionInfoResult: xcodeUtils.XcodeVersion[] = [
 const fakeGetInstalledXcodeAppsResult: string[] = [
     "/Applications/Xcode_10.3.app",
     "/Applications/Xcode_12_beta.app",
+    "/Applications/Xcode_12.app",
     "/Applications/Xcode_11.2.1.app",
     "/Applications/Xcode_11.4.app",
     "/Applications/Xcode_11.app",
@@ -25,6 +27,7 @@ const fakeGetInstalledXcodeAppsResult: string[] = [
 ];
 const expectedGetAllVersionsResult: xcodeUtils.XcodeVersion[] = [
     { version: "12.0.0", buildNumber: "", path: "/Applications/Xcode_12_beta.app", releaseType: "Beta", stable: false },
+    { version: "12.0.0", buildNumber: "", path: "/Applications/Xcode_12.app", releaseType: "GM", stable: true },
     { version: "11.4.0", buildNumber: "", path: "/Applications/Xcode_11.4.app", releaseType: "GM", stable: true },
     { version: "11.2.1", buildNumber: "", path: "/Applications/Xcode_11.2.1.app", releaseType: "GM", stable: true },
     { version: "11.2.0", buildNumber: "", path: "/Applications/Xcode_11.2.app", releaseType: "GM", stable: true },
@@ -52,23 +55,43 @@ describe("XcodeSelector", () => {
 
     describe("findVersion", () => {
         it.each([
-            ["latest", "12.0.0"],
-            ["latest-stable", "11.4.0"],
-            ["11", "11.4.0"],
-            ["11.x", "11.4.0"],
-            ["11.2.x", "11.2.1"],
-            ["11.2.0", "11.2.0"],
-            ["10.x", "10.3.0"],
-            ["~11.2.0", "11.2.1"],
-            ["^11.2.0", "11.4.0"],
-            ["< 11.0", "10.3.0"],
-            ["10.0.0 - 11.2.0", "11.2.0"],
-            ["give me latest version", null]
-        ] as [string, string | null][])("'%s' -> '%s'", (versionSpec: string, expected: string | null) => {
+            ["latest-stable", "12.0.0", true],
+            ["latest", "12.0.0", false],
+            ["11", "11.4.0", true],
+            ["11.x", "11.4.0", true],
+            ["11.2.x", "11.2.1", true],
+            ["11.2.0", "11.2.0", true],
+            ["10.x", "10.3.0", true],
+            ["~11.2.0", "11.2.1", true],
+            ["^11.2.0", "11.4.0", true],
+            ["< 11.0", "10.3.0", true],
+            ["10.0.0 - 11.2.0", "11.2.0", true],
+            ["12.0-beta", "12.0.0", false],
+            ["12.0", "12.0.0", true],
+            ["give me latest version", null, null]
+        ] as [string, string | null, boolean | null][])("'%s' -> '%s'", (versionSpec: string, expected: string | null, stable: boolean | null) => {
             const sel = new XcodeSelector();
             sel.getAllVersions = (): xcodeUtils.XcodeVersion[] => expectedGetAllVersionsResult;
-            const matchedVersion = sel.findVersion(versionSpec)?.version ?? null;
+            let xcodeVersion = sel.findVersion(versionSpec)
+            const matchedVersion = xcodeVersion?.version ?? null;
+            const isStable = xcodeVersion?.stable ?? null;
             expect(matchedVersion).toBe(expected);
+            expect(isStable).toBe(stable);
+        });
+    });
+
+    describe("stableVersion", () => {
+        let stableSemver = "12.0-beta"
+        let expectedVersion = "12.0.0"
+        it("will find beta version", () => {
+            const sel = new XcodeSelector();
+            sel.getAllVersions = (): xcodeUtils.XcodeVersion[] => expectedGetAllVersionsResult;
+            let xcodeVersion = sel.findVersion(stableSemver)
+            const matchedVersion = xcodeVersion?.version ?? null;
+            const isStable = xcodeVersion?.stable ?? null;
+
+            expect(matchedVersion).toBe(expectedVersion);
+            expect(isStable).toBe(false);
         });
     });
 

@@ -29,7 +29,12 @@ export class XcodeSelector {
             return availableVersions.filter(ver => ver.stable)[0];
         }
 
-        return availableVersions.find(ver => semver.satisfies(ver.version, versionSpec)) ?? null;
+        const betaSuffix = "-beta"
+        if (versionSpec.endsWith(betaSuffix)) {
+            return availableVersions.filter(ver => !ver.stable).find(ver => semver.satisfies(ver.version, versionSpec.slice(0, -betaSuffix.length))) ?? null;
+        }
+
+        return availableVersions.filter(ver => ver.stable).find(ver => semver.satisfies(ver.version, versionSpec)) ?? null;
     }
 
     setVersion(xcodeVersion: XcodeVersion): void {
