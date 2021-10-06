@@ -105,7 +105,7 @@ class XcodeSelector {
         return xcodeVersions.sort((first, second) => semver.compare(second.version, first.version));
     }
     findVersion(versionSpec) {
-        var _a, _b;
+        var _a;
         const availableVersions = this.getAllVersions();
         if (availableVersions.length === 0) {
             return null;
@@ -117,10 +117,14 @@ class XcodeSelector {
             return availableVersions.filter(ver => ver.stable)[0];
         }
         const betaSuffix = "-beta";
+        let isStable = true;
         if (versionSpec.endsWith(betaSuffix)) {
-            return (_a = availableVersions.filter(ver => !ver.stable).find(ver => semver.satisfies(ver.version, versionSpec.slice(0, -betaSuffix.length)))) !== null && _a !== void 0 ? _a : null;
+            isStable = false;
+            versionSpec = versionSpec.slice(0, -betaSuffix.length);
         }
-        return (_b = availableVersions.filter(ver => ver.stable).find(ver => semver.satisfies(ver.version, versionSpec))) !== null && _b !== void 0 ? _b : null;
+        return ((_a = availableVersions
+            .filter(ver => ver.stable === isStable)
+            .find(ver => semver.satisfies(ver.version, versionSpec))) !== null && _a !== void 0 ? _a : null);
     }
     setVersion(xcodeVersion) {
         if (!fs.existsSync(xcodeVersion.path)) {

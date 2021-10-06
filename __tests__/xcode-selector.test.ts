@@ -69,29 +69,14 @@ describe("XcodeSelector", () => {
             ["12.0-beta", "12.0.0", false],
             ["12.0", "12.0.0", true],
             ["give me latest version", null, null]
-        ] as [string, string | null, boolean | null][])("'%s' -> '%s'", (versionSpec: string, expected: string | null, stable: boolean | null) => {
+        ] as [string, string | null, boolean | null][])("'%s' -> '%s'", (versionSpec: string, expected: string | null, expectedStable: boolean | null) => {
             const sel = new XcodeSelector();
             sel.getAllVersions = (): xcodeUtils.XcodeVersion[] => expectedGetAllVersionsResult;
             let xcodeVersion = sel.findVersion(versionSpec)
             const matchedVersion = xcodeVersion?.version ?? null;
             const isStable = xcodeVersion?.stable ?? null;
             expect(matchedVersion).toBe(expected);
-            expect(isStable).toBe(stable);
-        });
-    });
-
-    describe("stableVersion", () => {
-        let stableSemver = "12.0-beta"
-        let expectedVersion = "12.0.0"
-        it("will find beta version", () => {
-            const sel = new XcodeSelector();
-            sel.getAllVersions = (): xcodeUtils.XcodeVersion[] => expectedGetAllVersionsResult;
-            let xcodeVersion = sel.findVersion(stableSemver)
-            const matchedVersion = xcodeVersion?.version ?? null;
-            const isStable = xcodeVersion?.stable ?? null;
-
-            expect(matchedVersion).toBe(expectedVersion);
-            expect(isStable).toBe(false);
+            expect(isStable).toBe(expectedStable);
         });
     });
 

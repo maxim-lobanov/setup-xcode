@@ -29,12 +29,18 @@ export class XcodeSelector {
             return availableVersions.filter(ver => ver.stable)[0];
         }
 
-        const betaSuffix = "-beta"
+        const betaSuffix = "-beta";
+        let isStable = true;
         if (versionSpec.endsWith(betaSuffix)) {
-            return availableVersions.filter(ver => !ver.stable).find(ver => semver.satisfies(ver.version, versionSpec.slice(0, -betaSuffix.length))) ?? null;
+            isStable = false;
+            versionSpec = versionSpec.slice(0, -betaSuffix.length);
         }
 
-        return availableVersions.filter(ver => ver.stable).find(ver => semver.satisfies(ver.version, versionSpec)) ?? null;
+        return (
+            availableVersions
+                .filter(ver => ver.stable === isStable)
+                .find(ver => semver.satisfies(ver.version, versionSpec)) ?? null
+        );
     }
 
     setVersion(xcodeVersion: XcodeVersion): void {
