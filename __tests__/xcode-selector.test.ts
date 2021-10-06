@@ -72,7 +72,7 @@ describe("XcodeSelector", () => {
         ] as [string, string | null, boolean | null][])("'%s' -> '%s'", (versionSpec: string, expected: string | null, expectedStable: boolean | null) => {
             const sel = new XcodeSelector();
             sel.getAllVersions = (): xcodeUtils.XcodeVersion[] => expectedGetAllVersionsResult;
-            let xcodeVersion = sel.findVersion(versionSpec)
+            const xcodeVersion = sel.findVersion(versionSpec)
             const matchedVersion = xcodeVersion?.version ?? null;
             const isStable = xcodeVersion?.stable ?? null;
             expect(matchedVersion).toBe(expected);
