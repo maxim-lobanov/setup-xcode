@@ -29,7 +29,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__webpack_require__(2186));
 const xcode_selector_1 = __webpack_require__(8865);
-const os_1 = __webpack_require__(2087);
 const run = () => {
     try {
         if (process.platform !== "darwin") {
@@ -45,11 +44,9 @@ const run = () => {
         }
         const targetVersion = selector.findVersion(versionSpec);
         if (!targetVersion) {
-            throw new Error([
-                `Could not find Xcode version that satisfied version spec: '${versionSpec}'`,
-                "Available versions:",
-                ...selector.getAllVersions().map(ver => `- ${ver.version} (${ver.path})`),
-            ].join(os_1.EOL));
+            console.log("Available versions:");
+            console.table(selector.getAllVersions());
+            throw new Error(`Could not find Xcode version that satisfied version spec: '${versionSpec}'`);
         }
         core.debug(`Xcode ${targetVersion.version} (${targetVersion.buildNumber}) (${targetVersion.path}) will be set`);
         selector.setVersion(targetVersion);
