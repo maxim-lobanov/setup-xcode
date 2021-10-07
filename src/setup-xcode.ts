@@ -1,6 +1,5 @@
 import * as core from "@actions/core";
 import { XcodeSelector } from "./xcode-selector";
-import { EOL } from "os";
 
 const run = (): void => {
     try {
@@ -22,12 +21,10 @@ const run = (): void => {
         const targetVersion = selector.findVersion(versionSpec);
 
         if (!targetVersion) {
+            console.log("Available versions:");
+            console.table(selector.getAllVersions());
             throw new Error(
-                [
-                    `Could not find Xcode version that satisfied version spec: '${versionSpec}'`,
-                    "Available versions:",
-                    ...selector.getAllVersions().map(ver => `- ${ver.version} (${ver.path})`),
-                ].join(EOL)
+                `Could not find Xcode version that satisfied version spec: '${versionSpec}'`
             );
         }
 

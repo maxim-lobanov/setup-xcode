@@ -6,7 +6,7 @@ The list of all available versions can be found in [virtual-environments](https:
 # Available parameters
 | Argument                | Description              | Format    |
 |-------------------------|--------------------------|--------------------|
-| `xcode-version`           | Specify the Xcode version to use | - `latest` or<br> - `latest-stable` or<br> - [SemVer](https://semver.org/) string or<br> - [SemVer](https://semver.org/)`-beta` |
+| `xcode-version`           | Specify the Xcode version to use | - `latest` or<br> - `latest-stable` or<br> - [SemVer](https://semver.org/) string or<br> - `<semver>-beta` |
 
 **Notes:**
 - `latest-stable` points to the latest stable version of Xcode
@@ -43,22 +43,22 @@ Set the specific stable version of Xcode:
 ```
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-11
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '12.0'
+        xcode-version: '13.0'
 ```
 
 Set the specific beta version of Xcode:
 ```
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-11
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '12.0-beta'
+        xcode-version: '13.0-beta'
 ```
 # License
 The scripts and documentation in this project are released under the [MIT License](LICENSE)
