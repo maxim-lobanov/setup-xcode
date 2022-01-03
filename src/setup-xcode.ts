@@ -36,8 +36,8 @@ const run = (): void => {
 
         core.setOutput("version", targetVersion.version);
         core.setOutput("path", targetVersion.path);
-    } catch (error) {
-        core.setFailed(error.message);
+    } catch (error: unknown) {
+        core.setFailed((error as Error).message);
     }
 };
 
