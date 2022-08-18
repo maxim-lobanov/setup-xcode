@@ -23,7 +23,7 @@
   "author": "Maxim Lobanov",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.6.0",
+    "@actions/core": "^1.9.1",
     "plist": "^3.0.4",
     "semver": "^7.3.5"
   },
