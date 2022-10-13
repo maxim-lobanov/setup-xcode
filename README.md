@@ -23,7 +23,7 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-    - uses: maxim-lobanov/setup-xcode@v1
+    - uses: maxim-lobanov/setup-xcode@v1.5.0
       with:
         xcode-version: latest-stable
 ```
@@ -34,7 +34,7 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-    - uses: maxim-lobanov/setup-xcode@v1
+    - uses: maxim-lobanov/setup-xcode@v1.5.0
       with:
         xcode-version: latest
 ```
@@ -45,7 +45,7 @@ jobs:
   build:
     runs-on: macos-11
     steps:
-    - uses: maxim-lobanov/setup-xcode@v1
+    - uses: maxim-lobanov/setup-xcode@v1.5.0
       with:
         xcode-version: '13.0'
 ```
@@ -56,7 +56,7 @@ jobs:
   build:
     runs-on: macos-11
     steps:
-    - uses: maxim-lobanov/setup-xcode@v1
+    - uses: maxim-lobanov/setup-xcode@v1.5.0
       with:
         xcode-version: '13.0-beta'
 ```
