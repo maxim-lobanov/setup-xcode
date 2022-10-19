@@ -8,16 +8,16 @@ on:
     - cron: 0 0 * * *
 
 jobs:
-  versions-macOS-1015:
-    name: macOS 10.15
-    runs-on: macos-10.15
+  versions-macOS-11:
+    name: macOS 11
+    runs-on: macos-11
     strategy:
       matrix:
-        xcode-version: ['10.3', '11', '12', '12.0', '12.4', '^12.1.0', '~12.1.0', latest, latest-stable]
+        xcode-version: ['11.7', '12', '12.4.0', '13', latest, latest-stable]
       fail-fast: false
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - uses: ./
       name: Setup Xcode
@@ -28,17 +28,17 @@ jobs:
       run: |
         echo "Version: ${{ steps.setup-xcode.outputs.version }}"
         echo "Path: ${{ steps.setup-xcode.outputs.path }}"
-
-  versions-macOS-110:
-    name: macOS 11
-    runs-on: macos-11
+  
+  versions-macOS-12:
+    name: macOS 12
+    runs-on: macos-12
     strategy:
       matrix:
-        xcode-version: ['11.7', '12', '12.4.0', '13', latest, latest-stable]
+        xcode-version: ['13.2.1', '13.4', '14.0.0', '14', latest, latest-stable]
       fail-fast: false
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - uses: ./
       name: Setup Xcode
