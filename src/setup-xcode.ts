@@ -1,5 +1,6 @@
 import * as core from "@actions/core";
 import { XcodeSelector } from "./xcode-selector";
+import { getXcodeVersionFromDotFile } from "./xcode-version-file";
 
 const run = (): void => {
     try {
@@ -9,7 +10,17 @@ const run = (): void => {
             );
         }
 
-        const versionSpec = core.getInput("xcode-version", { required: false });
+        const defaultVersionSpec = "latest";
+
+        const versionSpec = (() => {
+            const inputValue = core.getInput("xcode-version", { required: false });
+            if (inputValue !== "") {
+                return inputValue;
+            } else {
+                return getXcodeVersionFromDotFile(process.env) ?? defaultVersionSpec;
+            }
+        })();
+
         core.info(`Switching Xcode to version '${versionSpec}'...`);
 
         const selector = new XcodeSelector();

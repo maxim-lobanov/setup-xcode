@@ -14,6 +14,8 @@ The list of all available versions can be found in [runner-images](https://githu
 - SemVer examples: `10`, `11.4`, `12.0`, `11.7.0`, `^11.7.0` (find more examples in [SemVer cheatsheet](https://devhints.io/semver))
 - `-beta` suffix after SemVer will only select among beta releases that GitHub actions has installed
 - If sets a specific version, wraps it to single quotes in YAML like `'12.0'` to pass it as string because GitHub trimmes trailing `.0` from numbers
+- If the `xcode-version` argument is omitted, the version is read from the file `.xcode-version` at the root of the repository
+- `xcode-version` defaults to `latest` when no argument or `.xcode-version` file is present.
 
 # Usage
 
