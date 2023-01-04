@@ -96,7 +96,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.XcodeSelector = void 0;
-const child = __importStar(__nccwpck_require__(2081));
 const core = __importStar(__nccwpck_require__(2186));
 const fs = __importStar(__nccwpck_require__(7147));
 const semver = __importStar(__nccwpck_require__(1383));
@@ -134,7 +133,7 @@ class XcodeSelector {
         if (!fs.existsSync(xcodeVersion.path)) {
             throw new Error(`Invalid version: Directory '${xcodeVersion.path}' doesn't exist`);
         }
-        child.spawnSync("sudo", ["xcode-select", "-s", xcodeVersion.path]);
+        core.exportVariable("DEVELOPER_DIR", (0, xcode_utils_1.developerDirPath)(xcodeVersion));
         // set "MD_APPLE_SDK_ROOT" environment variable to specify Xcode for Mono and Xamarin
         core.exportVariable("MD_APPLE_SDK_ROOT", xcodeVersion.path);
     }
@@ -173,7 +172,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getXcodeVersionInfo = exports.getXcodeReleaseType = exports.getInstalledXcodeApps = exports.parsePlistFile = void 0;
+exports.developerDirPath = exports.getXcodeVersionInfo = exports.getXcodeReleaseType = exports.getInstalledXcodeApps = exports.parsePlistFile = void 0;
 const path = __importStar(__nccwpck_require__(1017));
 const fs = __importStar(__nccwpck_require__(7147));
 const core = __importStar(__nccwpck_require__(2186));
@@ -231,6 +230,10 @@ const getXcodeVersionInfo = (xcodeRootPath) => {
     };
 };
 exports.getXcodeVersionInfo = getXcodeVersionInfo;
+const developerDirPath = (xcodeVersion) => {
+    return path.join(xcodeVersion.path, "Contents", "Developer");
+};
+exports.developerDirPath = developerDirPath;
 
 
 /***/ }),
@@ -14273,14 +14276,6 @@ try {
 
 "use strict";
 module.exports = require("assert");
-
-/***/ }),
-
-/***/ 2081:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("child_process");
 
 /***/ }),
 
