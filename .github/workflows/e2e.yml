@@ -49,3 +49,4 @@ jobs:
       run: |
         echo "Version: ${{ steps.setup-xcode.outputs.version }}"
         echo "Path: ${{ steps.setup-xcode.outputs.path }}"
+        echo "XCODE_VER: ${{ env.XCODE_VER }}"
