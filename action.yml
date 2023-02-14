@@ -1,4 +1,4 @@
-name: 'Setup Xcode version'
+name: 'Setup Xcode version fork'
 author: 'Maxim Lobanov'
 description: 'Set up your GitHub Actions workflow with a specific version of Xcode'
 inputs:
