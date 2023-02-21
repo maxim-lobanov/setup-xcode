@@ -56,7 +56,7 @@
           core.info(`Xcode is set to ${targetVersion.version} (${targetVersion.buildNumber})`);
           core.setOutput("version", targetVersion.version);
           core.setOutput("path", targetVersion.path);
-          core.exportVariable('XCODE_VER', targetVersion.version);
+          core.exportVariable('XCODE_VERSION', targetVersion.version);
       }
       catch (error) {
           core.setFailed(error.message);
