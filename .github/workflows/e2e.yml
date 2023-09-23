@@ -50,8 +50,8 @@ jobs:
         echo "Version: ${{ steps.setup-xcode.outputs.version }}"
         echo "Path: ${{ steps.setup-xcode.outputs.path }}"
 
-    versions-macOS-13:
-    name: macOS 12
+  versions-macOS-13:
+    name: macOS 13
     runs-on: macos-13
     strategy:
       matrix:
