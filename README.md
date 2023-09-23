@@ -1,7 +1,7 @@
 # setup-xcode
 This action is intended to switch between pre-installed versions of Xcode for macOS images in GitHub Actions.
 
-The list of all available versions can be found in [runner-images](https://github.com/actions/runner-images/blob/master/images/macos/macos-12-Readme.md#xcode) repository.
+The list of all available versions can be found in [runner-images](https://github.com/actions/runner-images/blob/master/images/macos/macos-13-Readme.md#xcode) repository.
 
 # Available parameters
 | Argument                | Description              | Format    |
