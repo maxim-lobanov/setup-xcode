@@ -7,7 +7,7 @@ import { getInstalledXcodeApps, getXcodeVersionInfo, XcodeVersion } from "./xcod
 export class XcodeSelector {
     public getAllVersions(): XcodeVersion[] {
         const potentialXcodeApps = getInstalledXcodeApps().map(appPath =>
-            getXcodeVersionInfo(appPath)
+            getXcodeVersionInfo(appPath),
         );
         const xcodeVersions = potentialXcodeApps.filter((app): app is XcodeVersion => !!app);
 
