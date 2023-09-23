@@ -11,7 +11,7 @@ The list of all available versions can be found in [runner-images](https://githu
 **Notes:**
 - `latest-stable` points to the latest stable version of Xcode
 - `latest` *includes* beta releases that GitHub actions has installed
-- SemVer examples: `10`, `11.4`, `12.0`, `11.7.0`, `^11.7.0` (find more examples in [SemVer cheatsheet](https://devhints.io/semver))
+- SemVer examples: `14`, `14.1`, `14.3.1`, `^14.3.0` (find more examples in [SemVer cheatsheet](https://devhints.io/semver))
 - `-beta` suffix after SemVer will only select among beta releases that GitHub actions has installed
 - If sets a specific version, wraps it to single quotes in YAML like `'12.0'` to pass it as string because GitHub trimmes trailing `.0` from numbers
 
@@ -43,22 +43,22 @@ Set the specific stable version of Xcode:
 ```
 jobs:
   build:
-    runs-on: macos-11
+    runs-on: macos-13
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '13.0'
+        xcode-version: '14.3.1'
 ```
 
 Set the specific beta version of Xcode:
 ```
 jobs:
   build:
-    runs-on: macos-11
+    runs-on: macos-13
     steps:
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '13.0-beta'
+        xcode-version: '15.0-beta'
 ```
 # License
 The scripts and documentation in this project are released under the [MIT License](LICENSE)

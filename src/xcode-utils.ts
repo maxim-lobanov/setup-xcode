@@ -33,17 +33,17 @@ export const getInstalledXcodeApps = (): string[] => {
         withFileTypes: true,
     });
     const allApplicationsRealItems = allApplicationsChildItems.filter(
-        child => !child.isSymbolicLink() && child.isDirectory()
+        child => !child.isSymbolicLink() && child.isDirectory(),
     );
     const xcodeAppsItems = allApplicationsRealItems.filter(app =>
-        xcodeAppFilenameRegex.test(app.name)
+        xcodeAppFilenameRegex.test(app.name),
     );
     return xcodeAppsItems.map(child => path.join(applicationsDirectory, child.name));
 };
 
 export const getXcodeReleaseType = (xcodeRootPath: string): XcodeVersionReleaseType => {
     const licenseInfo = parsePlistFile(
-        path.join(xcodeRootPath, "Contents", "Resources", "LicenseInfo.plist")
+        path.join(xcodeRootPath, "Contents", "Resources", "LicenseInfo.plist"),
     );
     const licenseType = licenseInfo?.licenseType?.toString()?.toLowerCase();
     if (!licenseType) {

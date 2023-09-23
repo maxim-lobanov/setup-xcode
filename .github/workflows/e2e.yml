@@ -34,7 +34,28 @@ jobs:
     runs-on: macos-12
     strategy:
       matrix:
-        xcode-version: ['13.2.1', '13.4', '14.0.0', '14', latest, latest-stable]
+        xcode-version: ['13.2.1', '13.4', '14.0.1', '14', '14.2', latest, latest-stable]
+      fail-fast: false
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - uses: ./
+      name: Setup Xcode
+      id: setup-xcode
+      with:
+        xcode-version: ${{ matrix.xcode-version }}
+    - name: Print output variables
+      run: |
+        echo "Version: ${{ steps.setup-xcode.outputs.version }}"
+        echo "Path: ${{ steps.setup-xcode.outputs.path }}"
+
+    versions-macOS-13:
+    name: macOS 12
+    runs-on: macos-13
+    strategy:
+      matrix:
+        xcode-version: ['14', '14.2', '14.3.1', '15', '15.0', latest, latest-stable]
       fail-fast: false
     steps:
     - name: Checkout
