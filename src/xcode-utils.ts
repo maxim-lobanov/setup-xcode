@@ -74,3 +74,7 @@ export const getXcodeVersionInfo = (xcodeRootPath: string): XcodeVersion | null 
         path: xcodeRootPath,
     } as XcodeVersion;
 };
+
+export const developerDirPath = (xcodeVersion: XcodeVersion): string => {
+    return path.join(xcodeVersion.path, "Contents", "Developer");
+};
