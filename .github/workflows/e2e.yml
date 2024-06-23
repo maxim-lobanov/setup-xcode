@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - uses: ./
       name: Setup Xcode
@@ -28,7 +28,7 @@ jobs:
       run: |
         echo "Version: ${{ steps.setup-xcode.outputs.version }}"
         echo "Path: ${{ steps.setup-xcode.outputs.path }}"
-  
+
   versions-macOS-12:
     name: macOS 12
     runs-on: macos-12
@@ -38,7 +38,7 @@ jobs:
       fail-fast: false
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - uses: ./
       name: Setup Xcode
@@ -59,7 +59,7 @@ jobs:
       fail-fast: false
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - uses: ./
       name: Setup Xcode
