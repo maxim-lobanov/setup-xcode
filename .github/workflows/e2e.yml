@@ -8,27 +8,6 @@ on:
     - cron: 0 0 * * *
 
 jobs:
-  versions-macOS-11:
-    name: macOS 11
-    runs-on: macos-11
-    strategy:
-      matrix:
-        xcode-version: ['11.7', '12', '12.4.0', '13', latest, latest-stable]
-      fail-fast: false
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - uses: ./
-      name: Setup Xcode
-      id: setup-xcode
-      with:
-        xcode-version: ${{ matrix.xcode-version }}
-    - name: Print output variables
-      run: |
-        echo "Version: ${{ steps.setup-xcode.outputs.version }}"
-        echo "Path: ${{ steps.setup-xcode.outputs.path }}"
-
   versions-macOS-12:
     name: macOS 12
     runs-on: macos-12
@@ -70,3 +49,25 @@ jobs:
       run: |
         echo "Version: ${{ steps.setup-xcode.outputs.version }}"
         echo "Path: ${{ steps.setup-xcode.outputs.path }}"
+
+  versions-macOS-14:
+    name: macOS 14
+    runs-on: macos-14
+    strategy:
+      matrix:
+        # https://github.com/actions/runner-images/blob/main/images/macos/macos-14-Readme.md#xcode
+        xcode-version: ['14.3.1', '15.2', '15.3', latest, latest-stable]
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: ./
+        name: Setup Xcode
+        id: setup-xcode
+        with:
+          xcode-version: ${{ matrix.xcode-version }}
+      - name: Print output variables
+        run: |
+          echo "Version: ${{ steps.setup-xcode.outputs.version }}"
+          echo "Path: ${{ steps.setup-xcode.outputs.path }}"
