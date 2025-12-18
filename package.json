@@ -43,5 +43,21 @@
     "prettier": "^3.0.3",
     "ts-jest": "^29.1.1",
     "typescript": "^5.2.2"
+  },
+  "jest": {
+    "clearMocks": true,
+    "moduleFileExtensions": [
+      "js",
+      "ts"
+    ],
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/*.test.ts"
+    ],
+    "testRunner": "jest-circus/runner",
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "verbose": true
   }
 }

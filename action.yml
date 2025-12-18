@@ -1,14 +1,14 @@
-name: 'Setup Xcode version'
-author: 'Maxim Lobanov'
-description: 'Set up your GitHub Actions workflow with a specific version of Xcode'
+name: "Setup Xcode version"
+author: "Maxim Lobanov"
+description: "Set up your GitHub Actions workflow with a specific version of Xcode"
 inputs:
   xcode-version:
-    description: 'Version of Xcode to use'
+    description: "Version of Xcode to use"
     required: false
     default: latest
 runs:
-  using: 'node20'
-  main: 'dist/index.js'
+  using: "node20"
+  main: "dist/index.js"
 branding:
-  icon: 'code'
-  color: 'blue'
+  icon: "code"
+  color: "blue"
