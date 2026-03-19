@@ -32,12 +32,23 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const xcode_selector_1 = __nccwpck_require__(8865);
+const xcode_version_file_1 = __nccwpck_require__(9972);
 const run = () => {
     try {
         if (process.platform !== "darwin") {
             throw new Error(`This task is intended only for macOS platform. It can't be run on '${process.platform}' platform`);
         }
-        const versionSpec = core.getInput("xcode-version", { required: false });
+        const defaultVersionSpec = "latest";
+        const versionSpec = (() => {
+            var _a;
+            const inputValue = core.getInput("xcode-version", { required: false });
+            if (inputValue !== "") {
+                return inputValue;
+            }
+            else {
+                return (_a = (0, xcode_version_file_1.getXcodeVersionFromDotFile)(process.env)) !== null && _a !== void 0 ? _a : defaultVersionSpec;
+            }
+        })();
         core.info(`Switching Xcode to version '${versionSpec}'...`);
         const selector = new xcode_selector_1.XcodeSelector();
         if (core.isDebug()) {
@@ -231,6 +242,58 @@ const getXcodeVersionInfo = (xcodeRootPath) => {
     };
 };
 exports.getXcodeVersionInfo = getXcodeVersionInfo;
+
+
+/***/ }),
+
+/***/ 9972:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getXcodeVersionFromDotFile = void 0;
+const fs = __importStar(__nccwpck_require__(7147));
+const core = __importStar(__nccwpck_require__(2186));
+const path = __importStar(__nccwpck_require__(1017));
+const getXcodeVersionFromDotFile = (env) => {
+    const githubWorkspace = env.GITHUB_WORKSPACE;
+    if (!githubWorkspace) {
+        throw new Error("$GITHUB_WORKSPACE is not set");
+    }
+    const xcodeVersionFilePath = path.join(githubWorkspace, ".xcode-version");
+    try {
+        return fs.readFileSync(xcodeVersionFilePath).toString().trimEnd();
+    }
+    catch (err) {
+        core.debug("No .xcode-version file in repository root");
+        return undefined;
+    }
+};
+exports.getXcodeVersionFromDotFile = getXcodeVersionFromDotFile;
 
 
 /***/ }),
