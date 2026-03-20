@@ -1,10 +1,7 @@
 import fs from "fs";
-import child from "child_process";
 import * as core from "@actions/core";
 import { XcodeSelector } from "../src/xcode-selector";
 import * as xcodeUtils from "../src/xcode-utils";
-
-jest.mock("child_process");
 
 const fakeGetXcodeVersionInfoResult: xcodeUtils.XcodeVersion[] = [
     { version: "10.3.0", buildNumber: "", path: "/Applications/Xcode_10.3.app", releaseType: "GM", stable: true },
@@ -83,7 +80,6 @@ describe("XcodeSelector", () => {
     describe("setVersion", () => {
         let coreExportVariableSpy: jest.SpyInstance;
         let fsExistsSpy: jest.SpyInstance;
-        let fsSpawnSpy: jest.SpyInstance;
         const xcodeVersion: xcodeUtils.XcodeVersion = {
             version: "11.4",
             buildNumber: "12A7300",
@@ -95,7 +91,6 @@ describe("XcodeSelector", () => {
         beforeEach(() => {
             coreExportVariableSpy = jest.spyOn(core, "exportVariable");
             fsExistsSpy = jest.spyOn(fs, "existsSync");
-            fsSpawnSpy = jest.spyOn(child, "spawnSync");
         });
 
         afterEach(() => {
@@ -107,7 +102,8 @@ describe("XcodeSelector", () => {
             fsExistsSpy.mockImplementation(() => true);
             const sel = new XcodeSelector();
             sel.setVersion(xcodeVersion);
-            expect(fsSpawnSpy).toHaveBeenCalledWith("sudo", ["xcode-select", "-s", "/Applications/Xcode_11.4.app"]);
+            expect(coreExportVariableSpy).toHaveBeenCalledTimes(2)
+            expect(coreExportVariableSpy).toHaveBeenCalledWith("DEVELOPER_DIR", "/Applications/Xcode_11.4.app/Contents/Developer");
             expect(coreExportVariableSpy).toHaveBeenCalledWith("MD_APPLE_SDK_ROOT", "/Applications/Xcode_11.4.app");
         });
 
