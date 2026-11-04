@@ -105,10 +105,38 @@ describe("XcodeSelector", () => {
 
         it("works correctly", () => {
             fsExistsSpy.mockImplementation(() => true);
+            fsSpawnSpy.mockReturnValue({ status: 0 });
             const sel = new XcodeSelector();
             sel.setVersion(xcodeVersion);
             expect(fsSpawnSpy).toHaveBeenCalledWith("sudo", ["xcode-select", "-s", "/Applications/Xcode_11.4.app"]);
             expect(coreExportVariableSpy).toHaveBeenCalledWith("MD_APPLE_SDK_ROOT", "/Applications/Xcode_11.4.app");
+        });
+
+        it("throws if xcode-select cannot be executed", () => {
+            fsExistsSpy.mockImplementation(() => true);
+            fsSpawnSpy.mockReturnValue({ error: new Error("spawn failed") });
+            const sel = new XcodeSelector();
+
+            expect(() => sel.setVersion(xcodeVersion)).toThrow("Failed to execute xcode-select: spawn failed");
+            expect(coreExportVariableSpy).not.toHaveBeenCalled();
+        });
+
+        it("throws if xcode-select exits unsuccessfully", () => {
+            fsExistsSpy.mockImplementation(() => true);
+            fsSpawnSpy.mockReturnValue({ status: 1, signal: null });
+            const sel = new XcodeSelector();
+
+            expect(() => sel.setVersion(xcodeVersion)).toThrow("xcode-select failed with exit code 1");
+            expect(coreExportVariableSpy).not.toHaveBeenCalled();
+        });
+
+        it("throws if xcode-select is terminated by a signal", () => {
+            fsExistsSpy.mockImplementation(() => true);
+            fsSpawnSpy.mockReturnValue({ status: null, signal: "SIGTERM" });
+            const sel = new XcodeSelector();
+
+            expect(() => sel.setVersion(xcodeVersion)).toThrow("xcode-select failed with signal SIGTERM");
+            expect(coreExportVariableSpy).not.toHaveBeenCalled();
         });
 
         it("error is thrown if version doesn't exist", () => {

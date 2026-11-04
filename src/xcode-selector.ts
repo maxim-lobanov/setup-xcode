@@ -48,7 +48,16 @@ export class XcodeSelector {
             throw new Error(`Invalid version: Directory '${xcodeVersion.path}' doesn't exist`);
         }
 
-        child.spawnSync("sudo", ["xcode-select", "-s", xcodeVersion.path]);
+        const result = child.spawnSync("sudo", ["xcode-select", "-s", xcodeVersion.path]);
+        if (result.error) {
+            throw new Error(`Failed to execute xcode-select: ${result.error.message}`);
+        }
+        if (result.status !== 0) {
+            const failure = result.signal
+                ? `signal ${result.signal}`
+                : `exit code ${result.status}`;
+            throw new Error(`xcode-select failed with ${failure}`);
+        }
 
         // set "MD_APPLE_SDK_ROOT" environment variable to specify Xcode for Mono and Xamarin
         core.exportVariable("MD_APPLE_SDK_ROOT", xcodeVersion.path);
